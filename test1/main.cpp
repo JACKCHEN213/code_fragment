@@ -15,6 +15,7 @@ SDL_Surface *surface;
 SDL_Renderer *renderer;
 SDL_Surface *img;
 SDL_Surface *bmp;
+SDL_Texture *bmpTexture;
 TTF_Font *font;
 
 void draw() {
@@ -55,6 +56,35 @@ void draw2() {
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     SDL_Rect r = {0, 0, 100, 100};
     SDL_RenderFillRect(renderer, &r);
+    // 线条
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_RenderDrawLine(renderer, 0, 0, 100, 100);
+    // 批量绘制线条
+    SDL_Point points[] = {{50, 50}, {100, 200}, {300, 150}};
+    SDL_RenderDrawLines(renderer, points, sizeof(points) / sizeof(SDL_Point));
+    // 渲染图片
+    int w;
+    int h;
+    SDL_QueryTexture(bmpTexture, nullptr, nullptr, &w, &h);
+    SDL_Rect sr = {0, 0, w, h};
+    SDL_Rect dr = {0, 100, 150, 150};
+    SDL_RenderCopy(renderer, bmpTexture, &sr, &dr);
+    // 旋转、翻转
+    static double angle = 0;
+    SDL_Rect dr2 = {200, 100, 150, 150};
+    angle++;
+    SDL_RenderCopyEx(renderer, bmpTexture, &sr, &dr2, angle, nullptr,
+                     static_cast<const SDL_RendererFlip>(SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL));
+    // 缩放
+    static float scaleY = 1;
+    scaleY += 0.01;
+    if (scaleY > 2) {
+        scaleY = 0.1;
+    }
+    SDL_RenderSetScale(renderer, 1, scaleY);
+    // 偏移
+    SDL_Rect viewPort = {100, 100, 200, 200};
+    SDL_RenderSetViewport(renderer, &viewPort);
     SDL_RenderPresent(renderer);
 }
 
@@ -76,8 +106,9 @@ void eventLoop() {
         uint32_t end = SDL_GetTicks();
         uint32_t cost = end - begin;
         uint32_t frame = 1000 / FRAMERATE;
-        int64_t delay = frame - cost;
-        if (delay > 0) {
+        uint32_t delay = frame - cost;
+        // FIX: 修复卡顿问题。运行时间大于帧数，导致休息时间过长
+        if (delay > 0 && delay <= frame) {
             // 固定帧
             SDL_Delay(frame - cost);
         }
@@ -105,23 +136,43 @@ bool init() {
         return false;
     }
 
+    surface = SDL_GetWindowSurface(win);
+    if (surface == nullptr) {
+        SDL_Log("Can't get window surface, %s", SDL_GetError());
+        return false;
+    }
+    renderer = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED);
+    if (renderer == nullptr) {
+        SDL_Log("Can't create renderer, %s", SDL_GetError());
+        return false;
+    }
+
     img = IMG_Load("img\\01.jpeg");
+    if (img == nullptr) {
+        SDL_Log("Can't load img, %s", SDL_GetError());
+        return false;
+    }
     bmp = SDL_LoadBMP("img\\02.bmp");
+    if (bmp == nullptr) {
+        SDL_Log("Can't load img, %s", SDL_GetError());
+        return false;
+    }
+    bmpTexture = SDL_CreateTextureFromSurface(renderer, bmp);
+    if (bmpTexture == nullptr) {
+        SDL_Log("Can't get texture, %s", SDL_GetError());
+        return false;
+    }
     font = TTF_OpenFont("font\\arial.ttf", FONT_SIZE);
     if (font == nullptr) {
         SDL_Log("Can't open font, %s", TTF_GetError());
-        return false;
-    }
-    surface = SDL_GetWindowSurface(win);
-    renderer = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED);
-    if (renderer == nullptr) {
-        SDL_Log("Can\t create renderer. %s", SDL_GetError());
         return false;
     }
     return true;
 }
 
 void clear() {
+    SDL_DestroyTexture(bmpTexture);
+    SDL_FreeSurface(bmp);
     SDL_FreeSurface(img);
     TTF_CloseFont(font);
     SDL_DestroyRenderer(renderer);
@@ -132,7 +183,6 @@ int main() {
     if (!init()) {
         return 1;
     }
-
 
     eventLoop();
     clear();
