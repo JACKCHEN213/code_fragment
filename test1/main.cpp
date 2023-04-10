@@ -1,12 +1,15 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
+#include "core/Resource.h"
+#include "core/Ball.h"
 
 #undef main
 #define WIDTH 400
 #define HEIGHT 400
 #define FRAMERATE 60
 #define FONT_SIZE 32
+#define BALL_COUNT 5
 
 int x = 0;
 int y = 0;
@@ -17,6 +20,21 @@ SDL_Surface *img;
 SDL_Surface *bmp;
 SDL_Texture *bmpTexture;
 TTF_Font *font;
+SDL_Surface *ball;
+SDL_Texture *ballTexture;
+Ball *ballObjs[BALL_COUNT];
+
+void createBallObjs() {
+    for (int i = 0; i < BALL_COUNT; ++i) {
+        ballObjs[i] = Ball_Create(70 * i, 10, rand() % 10 - 5);
+    }
+}
+
+void destroyBallObjs() {
+    for (auto & ballObj : ballObjs) {
+        Ball_Destroy(ballObj);
+    }
+}
 
 void draw() {
     x++;
@@ -88,10 +106,32 @@ void draw2() {
     SDL_RenderPresent(renderer);
 }
 
+void draw3()
+{
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    SDL_RenderClear(renderer);
+    static double angle = 0;
+    angle++;
+    for (int i = 0; i < 5; ++i) {
+        SDL_Rect destRect = {i * 70, 0, 60, 60};
+        SDL_RenderCopyEx(renderer, ballTexture, nullptr, &destRect, angle + i, nullptr, SDL_FLIP_NONE);
+    }
+    SDL_RenderPresent(renderer);
+}
+
+void draw4 () {
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    SDL_RenderClear(renderer);
+    for (auto & ballObj : ballObjs) {
+        Ball_Draw(ballObj, renderer);
+    }
+    SDL_RenderPresent(renderer);
+}
+
 void eventLoop() {
     while (true) {
         uint32_t begin = SDL_GetTicks();
-        draw2();
+        draw4();
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
@@ -167,10 +207,28 @@ bool init() {
         SDL_Log("Can't open font, %s", TTF_GetError());
         return false;
     }
+    ball = IMG_Load("img\\small_ball.png");
+    if (ball == nullptr) {
+        SDL_Log("Can't load img, %s", SDL_GetError());
+        return false;
+    }
+    ballTexture = SDL_CreateTextureFromSurface(renderer, ball);
+    if (ballTexture == nullptr) {
+        SDL_Log("Can't get texture, %s", SDL_GetError());
+        return false;
+    }
+    if (Resource_Load(renderer, "img\\small_ball.png")) {
+        return false;
+    }
+    createBallObjs();
     return true;
 }
 
 void clear() {
+    destroyBallObjs();
+    Resource_Unload();
+    SDL_DestroyTexture(ballTexture);
+    SDL_FreeSurface(ball);
     SDL_DestroyTexture(bmpTexture);
     SDL_FreeSurface(bmp);
     SDL_FreeSurface(img);

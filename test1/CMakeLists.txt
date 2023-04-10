@@ -5,4 +5,4 @@ set(CMAKE_CXX_STANDARD 17)
 
 link_libraries(SDL2 SDL2_image SDL2_ttf)
 
-add_executable(test1 main.cpp)
+add_executable(test1 main.cpp core/Ball.cpp core/Ball.h core/Resource.cpp core/Resource.h)
