@@ -1,9 +1,10 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
-#include <random>
 #include "core/Resource.h"
 #include "core/Ball.h"
+#include "core/RectShape.h"
+#include "utils/color.h"
 
 #undef main
 #define WIDTH 400
@@ -11,6 +12,7 @@
 #define FRAMERATE 60
 #define FONT_SIZE 32
 #define BALL_COUNT 5
+#define RECT_SHAPE_COUNT 3
 
 int x = 0;
 int y = 0;
@@ -24,6 +26,7 @@ TTF_Font *font;
 SDL_Surface *ball;
 SDL_Texture *ballTexture;
 Ball *ballObjs[BALL_COUNT];
+RectShape *rectShapes[RECT_SHAPE_COUNT];
 
 void createBallObjs() {
     for (int i = 0; i < BALL_COUNT; ++i) {
@@ -123,6 +126,10 @@ void draw3()
 void draw4 () {
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderClear(renderer);
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+    for (auto &rectShape: rectShapes) {
+        RectShape_Draw(rectShape, renderer);
+    }
     for (auto & ballObj : ballObjs) {
         Ball_Draw(ballObj, renderer);
     }
@@ -135,14 +142,28 @@ void eventLoop() {
         draw4();
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT) {
-                return;
-            } else if (event.type == SDL_KEYDOWN) {
-                if (event.key.keysym.sym == SDLK_ESCAPE) {
+            switch (event.type) {
+                case SDL_QUIT:
                     return;
-                }
+                case SDL_MOUSEBUTTONDOWN:
+                case SDL_MOUSEBUTTONUP:
+                case SDL_MOUSEMOTION:
+                    for (int i = RECT_SHAPE_COUNT - 1; i >= 0; --i) {
+                        if (RectShape_OnMouseEvent(rectShapes[i], &event) == SDL_TRUE) {
+                            break;
+                        }
+                    }
+                    break;
+                case SDL_KEYDOWN:
+                    SDL_Log("Key down: %d", event.key.keysym.sym);
+                    if (event.key.keysym.sym == SDLK_ESCAPE) {
+                        return;
+                    }
+                    break;
+                case SDL_KEYUP:
+                    SDL_Log("Key up: %d", event.key.keysym.sym);
+                    break;
             }
-            printf("Event type: %d\n", event.type);
         }
         uint32_t end = SDL_GetTicks();
         uint32_t cost = end - begin;
@@ -222,10 +243,16 @@ bool init() {
         return false;
     }
     createBallObjs();
+    for (int i = 0; i < RECT_SHAPE_COUNT; ++i) {
+        rectShapes[i] = RectShape_Create((float)(i * 100), 0, 80, 80, getARGB());
+    }
     return true;
 }
 
 void clear() {
+    for (auto &rectShape: rectShapes) {
+        RectShape_Destroy(rectShape);
+    }
     destroyBallObjs();
     Resource_Unload();
     SDL_DestroyTexture(ballTexture);
