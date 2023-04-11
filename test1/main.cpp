@@ -1,6 +1,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
+#include <random>
 #include "core/Resource.h"
 #include "core/Ball.h"
 
@@ -26,7 +27,7 @@ Ball *ballObjs[BALL_COUNT];
 
 void createBallObjs() {
     for (int i = 0; i < BALL_COUNT; ++i) {
-        ballObjs[i] = Ball_Create(70 * i, 10, rand() % 10 - 5);
+        ballObjs[i] = Ball_Create(70 * i, 10, rand() % 10 - 5, rand() % 4 + 1, rand() % 4 + 1);
     }
 }
 
