@@ -12,6 +12,8 @@ RectShape *RectShape_Create(float x, float y, float w, float h, uint32_t color) 
     self->dest.w = w;
     self->dest.h = h;
     self->_dragEnabled = 0;
+    self->prev = nullptr;
+    self->next = nullptr;
     return self;
 }
 
@@ -53,8 +55,10 @@ SDL_bool RectShape_OnMouseEvent(RectShape *self, SDL_Event *event) {
             if ((float)event->button.y < self->dest.y || (float)event->button.y > self->dest.y + self->dest.h) {
                 break;
             }
-            self->_dragEnabled = 0;
-            return SDL_TRUE;
+            if (self->_dragEnabled) {
+                self->_dragEnabled = 0;
+                return SDL_TRUE;
+            }
     }
     return SDL_FALSE;
 }
