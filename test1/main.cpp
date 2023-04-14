@@ -5,6 +5,7 @@
 #include "core/Ball.h"
 #include "core/RectShape.h"
 #include "utils/color.h"
+#include "core/Cursor.h"
 
 #undef main
 #define WIDTH 400
@@ -27,6 +28,28 @@ SDL_Surface *ball;
 SDL_Texture *ballTexture;
 Ball *ballObjs[BALL_COUNT];
 RectShape *rectShapes[RECT_SHAPE_COUNT];
+RectShape *firstRectShape;
+RectShape *lastRectShape;
+DisplayObject *cursor;
+
+void addRectShape(RectShape *rectShape) {
+    if (lastRectShape != nullptr) {
+        lastRectShape->next = rectShape;
+        rectShape->prev = lastRectShape;
+        lastRectShape = rectShape;
+    } else {
+        lastRectShape = rectShape;
+        firstRectShape = rectShape;
+    }
+}
+
+void createRectShapeObjs() {
+    firstRectShape = lastRectShape = nullptr;
+    for (int i = 0; i < RECT_SHAPE_COUNT; ++i) {
+        addRectShape(RectShape_Create((float)(i * 100), 0, 80, 80, getARGB()));
+        // rectShapes[i] = RectShape_Create((float)(i * 100), 0, 80, 80, getARGB());
+    }
+}
 
 void createBallObjs() {
     for (int i = 0; i < BALL_COUNT; ++i) {
@@ -127,12 +150,18 @@ void draw4 () {
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderClear(renderer);
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-    for (auto &rectShape: rectShapes) {
-        RectShape_Draw(rectShape, renderer);
+    // for (auto &rectShape: rectShapes) {
+    //     RectShape_Draw(rectShape, renderer);
+    // }
+    RectShape *item = firstRectShape;
+    while (item != nullptr) {
+        RectShape_Draw(item, renderer);
+        item = item->next;
     }
     for (auto & ballObj : ballObjs) {
         Ball_Draw(ballObj, renderer);
     }
+    DisplayObject_Draw(cursor, renderer);
     SDL_RenderPresent(renderer);
 }
 
@@ -141,18 +170,36 @@ void eventLoop() {
         uint32_t begin = SDL_GetTicks();
         draw4();
         SDL_Event event;
+        RectShape *item = lastRectShape;
         while (SDL_PollEvent(&event)) {
             switch (event.type) {
                 case SDL_QUIT:
                     return;
+                case SDL_MOUSEMOTION:
+                    DisplayObject_OnMouseMove(cursor, &event);
                 case SDL_MOUSEBUTTONDOWN:
                 case SDL_MOUSEBUTTONUP:
-                case SDL_MOUSEMOTION:
-                    for (int i = RECT_SHAPE_COUNT - 1; i >= 0; --i) {
-                        if (RectShape_OnMouseEvent(rectShapes[i], &event) == SDL_TRUE) {
+                    while (item != nullptr) {
+                        if (RectShape_OnMouseEvent(item, &event) == SDL_TRUE) {
+                            if (item != lastRectShape) {
+                                if (item->prev != nullptr) {
+                                    item->prev->next = item->next;
+                                } else {
+                                    firstRectShape = item->next;
+                                }
+                                item->next->prev = item->prev;
+                                item->next = nullptr;
+                                addRectShape(item);
+                            }
                             break;
                         }
+                        item = item->prev;
                     }
+                    // for (int i = RECT_SHAPE_COUNT - 1; i >= 0; --i) {
+                    //     if (RectShape_OnMouseEvent(rectShapes[i], &event) == SDL_TRUE) {
+                    //         break;
+                    //     }
+                    // }
                     break;
                 case SDL_KEYDOWN:
                     SDL_Log("Key down: %d", event.key.keysym.sym);
@@ -243,15 +290,22 @@ bool init() {
         return false;
     }
     createBallObjs();
-    for (int i = 0; i < RECT_SHAPE_COUNT; ++i) {
-        rectShapes[i] = RectShape_Create((float)(i * 100), 0, 80, 80, getARGB());
-    }
+    createRectShapeObjs();
+    SDL_SetCursor(Resource_GetCursor());
+    cursor = Cursor_Create(0, 0, 50, 50);
     return true;
 }
 
 void clear() {
-    for (auto &rectShape: rectShapes) {
-        RectShape_Destroy(rectShape);
+    // for (auto &rectShape: rectShapes) {
+    //     RectShape_Destroy(rectShape);
+    // }
+    Cursor_Destroy(cursor);
+    RectShape *item = firstRectShape;
+    while (item != nullptr) {
+        RectShape *current = item;
+        item = item->next;
+        RectShape_Destroy(current);
     }
     destroyBallObjs();
     Resource_Unload();
@@ -270,6 +324,7 @@ int main() {
         return 1;
     }
 
+    // SDL_ShowCursor(0);
     eventLoop();
     clear();
     return 0;
