@@ -9,6 +9,7 @@
 #include "core/Slider.h"
 #include "core/RectInRect.h"
 #include "core/Eye.h"
+#include "core/Text.h"
 
 #undef main
 #define WIDTH 400
@@ -37,6 +38,8 @@ DisplayObject *cursor;
 DisplayObject *slider;
 DisplayObject *rectInRect;
 DisplayObject *eye1;
+DisplayObject *text1;
+int textCount = 0;
 
 void addRectShape(RectShape *rectShape) {
     if (lastRectShape != nullptr) {
@@ -176,6 +179,7 @@ void draw4() {
     DisplayObject_Draw(slider, renderer);
     DisplayObject_Draw(rectInRect, renderer);
     DisplayObject_Draw(eye1, renderer);
+    DisplayObject_Draw(text1, renderer);
     SDL_RenderPresent(renderer);
 }
 
@@ -222,6 +226,11 @@ void eventLoop() {
                     SDL_Log("Key down: %d", event.key.keysym.sym);
                     if (event.key.keysym.sym == SDLK_ESCAPE) {
                         return;
+                    } else if (event.key.keysym.sym == SDLK_SPACE) {
+                        textCount++;
+                        char buf[16];
+                        sprintf(buf, "Count: %d", textCount);
+                        Text_Set(text1, buf);
                     }
                     break;
                 case SDL_KEYUP:
@@ -313,6 +322,7 @@ bool init() {
     slider = Slider_Create(50, 100, 200, 10, 30, 20);
     rectInRect = RectInRect_Create(50, 150, 200, 100, 30, 20);
     eye1 = Eye_Create(300, 100, 30, 10);
+    text1 = Text_Create("font/arial.ttf", "I have a dream", 18, 0xff00ff00, 100 ,300);
     return true;
 }
 
@@ -320,6 +330,7 @@ void clear() {
     // for (auto &rectShape: rectShapes) {
     //     RectShape_Destroy(rectShape);
     // }
+    Text_Destroy(text1);
     Eye_Destroy(eye1);
     RectInRect_Destroy(rectInRect);
     Slider_Destroy(slider);

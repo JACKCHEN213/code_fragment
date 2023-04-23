@@ -26,4 +26,4 @@ add_executable(
         core/Eye.h
         utils/circle.h
         utils/point.h
-)
+        core/Text.cpp core/Text.h)
