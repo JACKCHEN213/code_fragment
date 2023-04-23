@@ -10,6 +10,7 @@
 #include "core/RectInRect.h"
 #include "core/Eye.h"
 #include "core/Text.h"
+#include "core/WalkAnimation.h"
 
 #undef main
 #define WIDTH 400
@@ -40,6 +41,7 @@ DisplayObject *rectInRect;
 DisplayObject *eye1;
 DisplayObject *text1;
 int textCount = 0;
+DisplayObject *walkAnimation;
 
 void addRectShape(RectShape *rectShape) {
     if (lastRectShape != nullptr) {
@@ -180,6 +182,7 @@ void draw4() {
     DisplayObject_Draw(rectInRect, renderer);
     DisplayObject_Draw(eye1, renderer);
     DisplayObject_Draw(text1, renderer);
+    DisplayObject_Draw(walkAnimation, renderer);
     SDL_RenderPresent(renderer);
 }
 
@@ -323,6 +326,7 @@ bool init() {
     rectInRect = RectInRect_Create(50, 150, 200, 100, 30, 20);
     eye1 = Eye_Create(300, 100, 30, 10);
     text1 = Text_Create("font/arial.ttf", "I have a dream", 18, 0xff00ff00, 100 ,300);
+    walkAnimation = WalkAnimation_Create();
     return true;
 }
 
@@ -330,6 +334,7 @@ void clear() {
     // for (auto &rectShape: rectShapes) {
     //     RectShape_Destroy(rectShape);
     // }
+    WalkAnimation_Destroy(walkAnimation);
     Text_Destroy(text1);
     Eye_Destroy(eye1);
     RectInRect_Destroy(rectInRect);

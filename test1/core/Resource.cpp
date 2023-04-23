@@ -10,6 +10,7 @@ static SDL_Texture *texture;
 static SDL_Surface *cursorSurface;
 static SDL_Cursor *cursor;
 static SDL_Texture *cursorTexture;
+static SDL_Texture *walkTexture;
 
 int Resource_Load(SDL_Renderer *renderer, const char *filename) {
     texture = IMG_LoadTexture(renderer, filename);
@@ -19,6 +20,11 @@ int Resource_Load(SDL_Renderer *renderer, const char *filename) {
     }
     cursorSurface = IMG_Load("img/cursor_2.png");
     if (cursorSurface == nullptr) {
+        SDL_Log("Failed to load resource, %s", SDL_GetError());
+        return 1;
+    }
+    walkTexture = IMG_LoadTexture(renderer, "img/walk.png");
+    if (walkTexture == nullptr) {
         SDL_Log("Failed to load resource, %s", SDL_GetError());
         return 1;
     }
@@ -43,7 +49,14 @@ SDL_Texture *Resource_GetCursorTexture() {
     return cursorTexture;
 }
 
+SDL_Texture *Resource_GetWalkTexture() {
+    return walkTexture;
+}
+
 void Resource_Unload() {
+    if (walkTexture != nullptr) {
+        SDL_DestroyTexture(walkTexture);
+    }
     if (texture != nullptr) {
         SDL_DestroyTexture(texture);
     }

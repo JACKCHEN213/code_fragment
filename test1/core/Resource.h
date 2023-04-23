@@ -18,6 +18,8 @@ SDL_Cursor *Resource_GetCursor();
 
 SDL_Texture *Resource_GetCursorTexture();
 
+SDL_Texture *Resource_GetWalkTexture();
+
 void Resource_Unload();
 
 
