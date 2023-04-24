@@ -42,6 +42,17 @@ DisplayObject *eye1;
 DisplayObject *text1;
 int textCount = 0;
 DisplayObject *walkAnimation;
+SDL_AudioSpec spec;
+Uint8 *sound;
+Uint32 soundLen;
+SDL_AudioDeviceID deviceId;
+
+typedef struct {
+    Uint8 *sound;
+    Uint32 soundLen;
+    Uint32 soundPos;
+} SoundInfo;
+SoundInfo *soundInfo;
 
 void addRectShape(RectShape *rectShape) {
     if (lastRectShape != nullptr) {
@@ -187,6 +198,7 @@ void draw4() {
 }
 
 void eventLoop() {
+    SDL_PauseAudioDevice(deviceId, SDL_FALSE);
     while (true) {
         uint32_t begin = SDL_GetTicks();
         draw4();
@@ -235,6 +247,7 @@ void eventLoop() {
                         sprintf(buf, "Count: %d", textCount);
                         Text_Set(text1, buf);
                     }
+                    WalkAnimation_Moving(walkAnimation, &event, WIDTH, HEIGHT);
                     break;
                 case SDL_KEYUP:
                     SDL_Log("Key up: %d", event.key.keysym.sym);
@@ -253,12 +266,26 @@ void eventLoop() {
     }
 }
 
+void SDLCALL audioCallback(void *userdata, Uint8 *stream, int len) {
+    auto *soundInfo = (SoundInfo *) userdata;
+
+    Uint32 remaining = soundInfo->soundLen - soundInfo->soundPos;
+    printf("pos: %d, len: %d\n", soundInfo->soundPos, len);
+    if (remaining > len) {
+        SDL_memcpy(stream, soundInfo->sound + soundInfo->soundPos, len);
+        soundInfo->soundPos += len;
+    } else {
+        SDL_memcpy(stream, soundInfo->sound + soundInfo->soundPos, remaining);
+        soundInfo->soundPos = 0;
+    }
+}
+
 bool init() {
     if (TTF_Init() < 0) {
         SDL_Log("Can't init ttf, %s", TTF_GetError());
         return false;
     }
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
         SDL_Log("Can't init window, %s", SDL_GetError());
         return false;
     }
@@ -325,8 +352,26 @@ bool init() {
     slider = Slider_Create(50, 100, 200, 10, 30, 20);
     rectInRect = RectInRect_Create(50, 150, 200, 100, 30, 20);
     eye1 = Eye_Create(300, 100, 30, 10);
-    text1 = Text_Create("font/arial.ttf", "I have a dream", 18, 0xff00ff00, 100 ,300);
+    text1 = Text_Create("font/arial.ttf", "I have a dream", 18, 0xff00ff00, 100, 300);
     walkAnimation = WalkAnimation_Create();
+
+
+    if (SDL_LoadWAV("audio/bird.wav", &spec, &sound, &soundLen) == nullptr) {
+        SDL_Log("%s", SDL_GetError());
+        return false;
+    }
+    spec.callback = audioCallback;
+    soundInfo = (SoundInfo *) malloc(sizeof(SoundInfo));
+    soundInfo->soundPos = 0;
+    soundInfo->sound = sound;
+    soundInfo->soundLen = soundLen;
+    spec.userdata = soundInfo;
+
+    deviceId = SDL_OpenAudioDevice(nullptr, SDL_FALSE, &spec, nullptr, 0);
+    if (!deviceId) {
+        SDL_Log("%s", SDL_GetError());
+        return false;
+    }
     return true;
 }
 
@@ -334,6 +379,9 @@ void clear() {
     // for (auto &rectShape: rectShapes) {
     //     RectShape_Destroy(rectShape);
     // }
+    free(soundInfo);
+    SDL_CloseAudioDevice(deviceId);
+    SDL_FreeWAV(sound);
     WalkAnimation_Destroy(walkAnimation);
     Text_Destroy(text1);
     Eye_Destroy(eye1);
