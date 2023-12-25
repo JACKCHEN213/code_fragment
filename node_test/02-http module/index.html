@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>测试jsonp</title>
+</head>
+<body>
+<script>
+    let oScript = document.createElement('script');
+    oScript.src = 'http://localhost:9001/api/jsonp';
+    fetch('http://localhost:9001/api/json', {
+        headers: {
+            'Authorization': 'Bearer axsadqqewq.wqeqwd.caarewqorjqw',
+        },
+    })
+        .then(res => res.json())
+        .then(data => console.log(data))
+        .catch(error => console.error(error));
+    document.body.appendChild(oScript)
+
+    function jsonp(obj) {
+        console.log(obj);
+    }
+
+    fetch('http://localhost:9001/cat_eyes')
+        .then(res => res.json())
+        .then(data => console.log(data))
+        .catch(error => console.error(error))
+    fetch('http://localhost:9001/xiaomi_youpin')
+        .then(res => res.json())
+        .then(data => console.log(data))
+        .catch(error => console.error(error))
+</script>
+</body>
+</html>
