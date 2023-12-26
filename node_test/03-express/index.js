@@ -6,6 +6,8 @@ const app = express();
 
 app.set('views', './views');
 app.set('view engine', 'ejs');
+// app.set('view engine', 'html');
+// app.engine('html', require('ejs').renderFile);
 
 app.use(express.static('public'));
 
