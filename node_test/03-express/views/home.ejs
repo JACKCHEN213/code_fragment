@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>home</title>
+</head>
+<body>
+<div>
+    <%- include('./header.ejs', {show: true})%>
+    <%# Hello World%>
+    <!-- Hello World -->
+    <ul>
+        <% for (let i = 0; i < list.length; i++) { %>
+        <li><%= list[i]%></li>
+        <% } %>
+    </ul>
+    <%- show%>
+</div>
+</body>
+</html>

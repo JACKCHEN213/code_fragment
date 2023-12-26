@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    <meta charset="UTF-8">
+    <title>login</title>
+<link rel="stylesheet" href="css/login.css">
+</head>
+<body>
+<div id="app">
+    <form action="/login" method="post">
+        <div>
+            <label for="username">用户名</label>
+            <input type="text" id="username" name="username"/>
+        </div>
+        <div>
+            <label for="password">密码</label>
+            <input type="password" id="password" name="password">
+        </div>
+        <div>
+            <button type="submit">登录-form</button>
+            <button id="login">登录-get</button>
+            <button id="login-post">登录-post</button>
+        </div>
+        <p> <%=error%></p>
+    </form>
+</div>
+<script src="js/login.js"></script>
+</body>
+</html>
