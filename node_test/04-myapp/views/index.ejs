@@ -14,7 +14,11 @@
     </div>
     <hr />
     <div>
+        <input type="text" id="updateId">
         <button id="update">更新</button>
+    </div>
+    <div>
+        <input type="text" id="deleteId">
         <button id="delete">删除</button>
     </div>
     <script>
@@ -23,14 +27,16 @@
         let ageEle = document.getElementById('age');
         let passwordEle = document.getElementById('password');
         let updateEle = document.getElementById('update');
+        let updateIdEle = document.getElementById('updateId');
         let deleteEle = document.getElementById('delete');
+        let deleteIdEle = document.getElementById('deleteId');
         registerEle.onclick = function () {
             let data = {
                 username: usernameEle.value,
                 password: passwordEle.value,
                 age: parseInt(ageEle.value),
             }
-            fetch('/api/user/add', {
+            fetch('/api/user', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json;charset=utf-8',
@@ -45,7 +51,7 @@
                 password: passwordEle.value,
                 age: parseInt(ageEle.value),
             }
-            fetch('/api/user/update/658d8ee1cb988527b50804f8', {
+            fetch(`/api/user/${updateIdEle.value}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json;charset=utf-8',
@@ -56,7 +62,7 @@
         }
 
         deleteEle.onclick = () => {
-            fetch('/api/user/delete/658ecb2447cb039bd0872987', {
+            fetch(`/api/user/${deleteIdEle.value}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json;charset=utf-8',
@@ -64,7 +70,7 @@
             }).then(res => res.json())
                 .then(res => console.log(res))
         }
-        fetch('/api/user/list', {
+        fetch('/api/user', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json;charset=utf-8',
