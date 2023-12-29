@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var UserModel = require('../model/UserModal');
+const UserController = require("../controlls/UserController");
 
 /* GET users listing. */
 router.get('/', function (req, res, next) {
@@ -9,46 +9,12 @@ router.get('/', function (req, res, next) {
     res.send('respond with a resource');
 });
 
-router.post('/user', (req, res) => {
-    // console.log(req.body)
-    // 1.创建一个模型
-    // user.create user.find user.update user.delete
-    let {username, password, age} = req.body;
-    UserModel.create({
-        username, password, age
-    }).then(data => console.log(data))
-    res.send({
-        ok: 1,
-    });
-});
+router.post('/user', UserController.addUser);
 
-router.put('/user/:id', (req, res) => {
-    // console.log(req.body, req.params)
-    let {username, password, age} = req.body;
-    UserModel.updateMany({
-        _id: req.params.id
-    }, {
-        username, password, age
-    }).then(data => console.log(data))
-    res.send({
-        ok: 1
-    });
-});
+router.put('/user/:id', UserController.updateUser);
 
-router.delete('/user/:id', (req, res) => {
-    UserModel.deleteOne({_id: req.params.id}).then(data => console.log(data))
-    res.send({
-        ok: 1
-    });
-});
+router.delete('/user/:id', UserController.deleteUser);
 
-router.get('/user', (req, res) => {
-    console.log(UserModel.schema.obj)
-    UserModel.find({}, ['username', 'password', 'age', '_id'])
-        .sort({age: 1})
-        .then(data => {
-            res.send(data);
-        })
-});
+router.get('/user', UserController.getUser);
 
 module.exports = router;
