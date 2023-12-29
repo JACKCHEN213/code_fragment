@@ -12,11 +12,18 @@
         <div>年龄: <input type="number" id="age"></div>
         <div><button id="register">注册</button></div>
     </div>
+    <hr />
+    <div>
+        <button id="update">更新</button>
+        <button id="delete">删除</button>
+    </div>
     <script>
         let registerEle = document.getElementById('register');
         let usernameEle = document.getElementById('username');
         let ageEle = document.getElementById('age');
         let passwordEle = document.getElementById('password');
+        let updateEle = document.getElementById('update');
+        let deleteEle = document.getElementById('delete');
         registerEle.onclick = function () {
             let data = {
                 username: usernameEle.value,
@@ -32,6 +39,46 @@
             }).then(res => res.json())
                 .then(res => console.log(res))
         }
+        updateEle.onclick = () => {
+            let data = {
+                username: usernameEle.value,
+                password: passwordEle.value,
+                age: parseInt(ageEle.value),
+            }
+            fetch('/api/user/update/658d8ee1cb988527b50804f8', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8',
+                },
+                body: JSON.stringify(data),
+            }).then(res => res.json())
+                .then(res => console.log(res))
+        }
+
+        deleteEle.onclick = () => {
+            fetch('/api/user/delete/658ecb2447cb039bd0872987', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8',
+                },
+            }).then(res => res.json())
+                .then(res => console.log(res))
+        }
+        fetch('/api/user/list', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8',
+            },
+        }).then(res => res.json())
+            .then(res => {
+                let tag = document.createElement('ul');
+                let lis = '';
+                for (const item of res) {
+                    lis += `<li>${item.username}/${item.password}/${item.age}/${item._id}</li>`;
+                }
+                tag.innerHTML = lis;
+                document.body.appendChild(tag);
+            })
     </script>
   </body>
 </html>
