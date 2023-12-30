@@ -58,6 +58,13 @@
             console.log(res)
         })
     }
+    document.onvisibilitychange = function() {
+        if (document.hidden) {
+            document.title = '离开了当前页面';
+        } else {
+            document.title = '回到了当前页面';
+        }
+    }
 </script>
 </body>
 </html>
