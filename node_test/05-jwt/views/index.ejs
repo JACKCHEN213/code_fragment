@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh">
   <head>
     <title><%= title %></title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
+      <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
       <script src="https://unpkg.com/axios@1.1.2/dist/axios.min.js"></script>
       <script>
           // Add a request interceptor
@@ -36,75 +37,105 @@
               return Promise.reject(error);
           });
       </script>
+      <style>
+          td input {
+              width: 100px;
+          }
+      </style>
   </head>
   <body>
     <h1>mongodb</h1>
     <button id="exit">退出登录</button>
     <div>
-        <div>用户名: <input id="username"></div>
-        <div>密码: <input type="password" id="password"></div>
-        <div>年龄: <input type="number" id="age"></div>
-        <div><button id="register">注册</button></div>
+        <form action="/api/user" method="post" enctype="multipart/form-data">
+            <div>用户名: <input id="username" name="username"></div>
+            <div>密码: <input type="password" name="password" id="password"></div>
+            <div>年龄: <input type="number" name="age" id="age"></div>
+            <div>头像: <input type="file" name="file" id="file"></div>
+            <div>
+                <input type="submit" value="添加用户-form">
+            </div>
+        </form>
     </div>
+    <button id="register">注册</button>
     <hr />
     <div>
-        <input type="text" id="updateId">
-        <button id="update">更新</button>
-    </div>
-    <div>
-        <input type="text" id="deleteId">
-        <button id="delete">删除</button>
+        <table border="1">
+            <caption>
+            </caption>
+            <thead>
+            <tr>
+                <th>姓名</th>
+                <th>密码</th>
+                <th>年龄</th>
+                <th>头像</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+        </table>
     </div>
     <script>
-        let registerEle = document.getElementById('register');
-        let usernameEle = document.getElementById('username');
-        let ageEle = document.getElementById('age');
-        let passwordEle = document.getElementById('password');
-        let updateEle = document.getElementById('update');
-        let updateIdEle = document.getElementById('updateId');
-        let deleteEle = document.getElementById('delete');
-        let deleteIdEle = document.getElementById('deleteId');
-        let exitEle = document.getElementById('exit');
-        registerEle.onclick = function () {
-            let data = {
-                username: usernameEle.value,
-                password: passwordEle.value,
-                age: parseInt(ageEle.value),
-            }
-            axios.post('/api/user', data).then(res => {
-                console.log(res)
-            });
-        }
-        updateEle.onclick = () => {
-            let data = {
-                username: usernameEle.value,
-                password: passwordEle.value,
-                age: parseInt(ageEle.value),
-            }
-            axios.put(`/api/user/${updateIdEle.value}`, data).then(res => {
-                console.log(res)
-            });
-        }
-
-        deleteEle.onclick = () => {
-            axios.delete(`/api/user/${deleteIdEle.value}`).then(res => {
-                console.log(res)
-            });
-        }
         axios.get(`/api/user`).then(res => {
-            let tag = document.createElement('ul');
-            let lis = '';
-            for (const item of res.data) {
-                lis += `<li>${item.username}/${item.password}/${item.age}/${item._id}</li>`;
+            let tr = ``;
+            for (const index in res.data) {
+                const item = res.data[index];
+                tr += `<tr>`;
+                tr += `<td><input name="username" value="${item.username}" /></td>`;
+                tr += `<td><input name="password" value="${item.password}" /></td>`;
+                tr += `<td><input name="age" value="${item.age}" /></td>`;
+                tr += `<td><img width="100px" src="${item.filepath}" alt="头像" /></td>`;
+                tr += `<td>
+                        <button onclick="updateUser('${item._id}', this)">更新</button>
+                        <button onclick="deleteUser('${item._id}')">删除</button>
+                       </td>`;
+                tr += `</tr>`;
             }
-            tag.innerHTML = lis;
-            document.body.appendChild(tag);
+            document.getElementById('tbody').innerHTML = tr;
         });
-        exitEle.onclick = () => {
+
+        $('#register').on('click', () => {
+            let formData = new FormData();
+            formData.append('username', $('#username').val());
+            formData.append('password', $('#password').val());
+            formData.append('age', parseInt($('#age').val()));
+            let files = $('#file').get(0).files;
+            if (files.length) {
+                formData.append('file', files[0]);
+            }
+            axios.post('/api/user', formData).then(res => {
+                console.log(res)
+                window.location.reload();
+            });
+        });
+        $('#exit').on('click', () => {
             axios.delete(`/api/login`).then(res => {
                 window.localStorage.removeItem('token');
                 console.log(res)
                 window.location.href = '/login';
+            });
+        });
+        
+        function updateUser(_id, obj) {
+            const tr = $(obj).parents('tr');
+            const usernameTag = tr.find('input[name="username"]');
+            const passwordTag = tr.find('input[name="password"]');
+            const ageTag = tr.find('input[name="age"]');
+            let data = {
+                username: usernameTag.val(),
+                password: passwordTag.val(),
+                age: ageTag.val(),
+            }
+            axios.put(`/api/user/${_id}`, data).then(res => {
+                console.log(res)
+                window.location.reload();
+            });
+        }
+
+        function deleteUser(_id) {
+            axios.delete(`/api/user/${_id}`).then(res => {
+                console.log(res)
+                window.location.reload();
             });
         }
     </script>

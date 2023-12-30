@@ -1,8 +1,8 @@
 const UserModel = require("../model/UserModal");
 const UserService = {
-    addUser: (username, password, age) => {
+    addUser: (username, password, age, filepath) => {
         return UserModel.create({
-            username, password, age
+            username, password, age, filepath
         });
     },
     updateUser: (id, username, password, age) => {
@@ -15,8 +15,8 @@ const UserService = {
     deleteUser: (id) => {
         return UserModel.deleteOne({_id: id});
     },
-    getUser: () => {
-        return UserModel.find({}, ['username', 'password', 'age', '_id'])
+    getUser: (condition = {}) => {
+        return UserModel.find(condition, ['username', 'password', 'age', '_id', 'filepath'])
             .sort({age: 1});
     },
     login: (username, password) => {

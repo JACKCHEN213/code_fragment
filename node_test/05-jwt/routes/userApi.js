@@ -1,8 +1,11 @@
 var express = require('express');
+const multer = require('multer');
 var router = express.Router();
 const UserController = require("../controlls/UserController");
+const upload = multer({dest: 'public/uploads/'})
 
-router.post('/', UserController.addUser);
+// upload.array
+router.post('/', upload.single('file'), UserController.addUser);
 
 router.put('/:id', UserController.updateUser);
 
