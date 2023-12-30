@@ -6,6 +6,7 @@
   </head>
   <body>
     <h1>mongodb</h1>
+    <button id="exit">退出登录</button>
     <div>
         <div>用户名: <input id="username"></div>
         <div>密码: <input type="password" id="password"></div>
@@ -30,6 +31,7 @@
         let updateIdEle = document.getElementById('updateId');
         let deleteEle = document.getElementById('delete');
         let deleteIdEle = document.getElementById('deleteId');
+        let exitEle = document.getElementById('exit');
         registerEle.onclick = function () {
             let data = {
                 username: usernameEle.value,
@@ -43,7 +45,12 @@
                 },
                 body: JSON.stringify(data),
             }).then(res => res.json())
-                .then(res => console.log(res))
+                .then(res => {
+                    if (!res.ok) {
+                        window.location.href = '/login';
+                    }
+                    console.log(res)
+                })
         }
         updateEle.onclick = () => {
             let data = {
@@ -58,7 +65,12 @@
                 },
                 body: JSON.stringify(data),
             }).then(res => res.json())
-                .then(res => console.log(res))
+                .then(res => {
+                    if (!res.ok) {
+                        window.location.href = '/login';
+                    }
+                    console.log(res)
+                })
         }
 
         deleteEle.onclick = () => {
@@ -68,7 +80,12 @@
                     'Content-Type': 'application/json;charset=utf-8',
                 },
             }).then(res => res.json())
-                .then(res => console.log(res))
+                .then(res => {
+                    if (!res.ok) {
+                        window.location.href = '/login';
+                    }
+                    console.log(res)
+                })
         }
         fetch('/api/user', {
             method: 'GET',
@@ -85,6 +102,18 @@
                 tag.innerHTML = lis;
                 document.body.appendChild(tag);
             })
+        exitEle.onclick = () => {
+            fetch(`/api/login`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8',
+                },
+            }).then(res => res.json())
+                .then(res => {
+                    window.location.href = '/login';
+                    console.log(res)
+                })
+        }
     </script>
   </body>
 </html>

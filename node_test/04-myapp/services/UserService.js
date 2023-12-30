@@ -18,6 +18,9 @@ const UserService = {
     getUser: () => {
         return UserModel.find({}, ['username', 'password', 'age', '_id'])
             .sort({age: 1});
+    },
+    login: (username, password) => {
+        return UserModel.find({username, password});
     }
 };
 
