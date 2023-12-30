@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+      <script src="https://unpkg.com/axios@1.1.2/dist/axios.min.js"></script>
+      <script>
+          // Add a request interceptor
+          axios.interceptors.request.use(function (config) {
+              // Do something before request is sent
+              let token = window.localStorage.getItem('token')
+              if (!token) {
+                  // window.location.href = '/login';
+                  // return false;
+              }
+              config.headers.Authorization = `Bearer ${token}`;
+              return config;
+          }, function (error) {
+              // Do something with request error
+              return Promise.reject(error);
+          });
+
+          // Add a response interceptor
+          axios.interceptors.response.use(function (response) {
+              // Any status code that lie within the range of 2xx cause this function to trigger
+              // Do something with response data
+              // window.localStorage.setItem('token', response.headers.authorization);
+              return response;
+          }, function (error) {
+              if (error.response.status === 401) {
+                  window.localStorage.removeItem('token');
+                  window.location.href = '/login';
+              }
+              // Any status codes that falls outside the range of 2xx cause this function to trigger
+              // Do something with response error
+              return Promise.reject(error);
+          });
+      </script>
+  </head>
+  <body>
+    <h1>mongodb</h1>
+    <button id="exit">退出登录</button>
+    <div>
+        <div>用户名: <input id="username"></div>
+        <div>密码: <input type="password" id="password"></div>
+        <div>年龄: <input type="number" id="age"></div>
+        <div><button id="register">注册</button></div>
+    </div>
+    <hr />
+    <div>
+        <input type="text" id="updateId">
+        <button id="update">更新</button>
+    </div>
+    <div>
+        <input type="text" id="deleteId">
+        <button id="delete">删除</button>
+    </div>
+    <script>
+        let registerEle = document.getElementById('register');
+        let usernameEle = document.getElementById('username');
+        let ageEle = document.getElementById('age');
+        let passwordEle = document.getElementById('password');
+        let updateEle = document.getElementById('update');
+        let updateIdEle = document.getElementById('updateId');
+        let deleteEle = document.getElementById('delete');
+        let deleteIdEle = document.getElementById('deleteId');
+        let exitEle = document.getElementById('exit');
+        registerEle.onclick = function () {
+            let data = {
+                username: usernameEle.value,
+                password: passwordEle.value,
+                age: parseInt(ageEle.value),
+            }
+            axios.post('/api/user', data).then(res => {
+                console.log(res)
+            });
+        }
+        updateEle.onclick = () => {
+            let data = {
+                username: usernameEle.value,
+                password: passwordEle.value,
+                age: parseInt(ageEle.value),
+            }
+            axios.put(`/api/user/${updateIdEle.value}`, data).then(res => {
+                console.log(res)
+            });
+        }
+
+        deleteEle.onclick = () => {
+            axios.delete(`/api/user/${deleteIdEle.value}`).then(res => {
+                console.log(res)
+            });
+        }
+        axios.get(`/api/user`).then(res => {
+            let tag = document.createElement('ul');
+            let lis = '';
+            for (const item of res.data) {
+                lis += `<li>${item.username}/${item.password}/${item.age}/${item._id}</li>`;
+            }
+            tag.innerHTML = lis;
+            document.body.appendChild(tag);
+        });
+        exitEle.onclick = () => {
+            axios.delete(`/api/login`).then(res => {
+                window.localStorage.removeItem('token');
+                console.log(res)
+                window.location.href = '/login';
+            });
+        }
+    </script>
+  </body>
+</html>

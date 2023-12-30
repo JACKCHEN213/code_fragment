@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>login</title>
+    <script src="https://unpkg.com/axios@1.1.2/dist/axios.min.js"></script>
+    <script>
+        // Add a request interceptor
+        axios.interceptors.request.use(function (config) {
+            // Do something before request is sent
+            return config;
+        }, function (error) {
+            // Do something with request error
+            return Promise.reject(error);
+        });
+
+        // Add a response interceptor
+        axios.interceptors.response.use(function (response) {
+            // Any status code that lie within the range of 2xx cause this function to trigger
+            // Do something with response data
+            if (response.data.ok) {
+                window.localStorage.setItem('token', response.headers.authorization);
+            }
+            return response;
+        }, function (error) {
+            // Any status codes that falls outside the range of 2xx cause this function to trigger
+            // Do something with response error
+            return Promise.reject(error);
+        });
+    </script>
+</head>
+<body>
+<h1>LOGIN</h1>
+
+<div>
+    <div>用户名: <input id="username"></div>
+    <div>密码: <input type="password" id="password"></div>
+    <div>
+        <button id="login">登录</button>
+    </div>
+</div>
+<script>
+    let loginEle = document.getElementById('login');
+    let usernameEle = document.getElementById('username');
+    let passwordEle = document.getElementById('password');
+    loginEle.onclick = function () {
+        let data = {
+            username: usernameEle.value,
+            password: passwordEle.value,
+        }
+        axios.post('/api/login', data).then(res => {
+            if (res.data.ok) {
+                window.location.href = '/';
+            }
+            console.log(res)
+        })
+    }
+</script>
+</body>
+</html>
