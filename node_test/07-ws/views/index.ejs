@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>index</title>
+</head>
+<body>
+<h1>index</h1>
+<script>
+    let ws = new WebSocket('ws://localhost:8080');
+
+    ws.onopen = () => {
+        console.log('connect success')
+        ws.send('browser say: hello!');
+    }
+
+    ws.onmessage = (obj) => {
+        console.log(obj.data);
+    }
+
+    ws.onerror = (error) => {
+        console.log(error)
+    }
+
+    ws.onclose = () => {
+        console.log('connection close');
+    }
+</script>
+</body>
+</html>
