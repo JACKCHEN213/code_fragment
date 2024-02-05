@@ -1,0 +1,36 @@
+#wrapper {
+    width: 600px;
+    height: 400px;
+    position: relative;
+}
+
+#input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 600px;
+    height: 400px;
+    resize: none;
+    background: none;
+    z-index: 999;
+    color: transparent;
+    caret-color: #999;
+    font-size: 16px;
+    font-weight: 100;
+    font-family: '微软雅黑';
+    padding: 10px;
+}
+
+#showback {
+    position: absolute;
+    top: 0px;
+    left: 0;
+    width: 600px;
+    height: 400px;
+    z-index: 0;
+    font-size: 16px;
+    font-weight: 100;
+    font-family: '微软雅黑';
+    padding: 10px;
+    white-space: pre-wrap;
+}

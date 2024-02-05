@@ -1,0 +1,187 @@
+{
+	"extends": "stylelint-config-standard",
+	"ignoreFiles": ["**/*.js", "**/*.md"],
+	"plugins": ["stylelint-order", "stylelint-scss"],
+	"rules": {
+		"at-rule-no-unknown": [
+			true,
+			{
+				"ignoreAtRules": ["function", "if", "each", "include", "mixin"]
+			}
+		],
+		"color-hex-case": "upper",
+		"color-hex-length": "long",
+		"color-no-invalid-hex": true,
+		"no-empty-source": true,
+		"no-missing-end-of-source-newline": true,
+		"indentation": "tab",
+		"no-descending-specificity": true,
+		"block-no-empty": true,
+		"block-closing-brace-empty-line-before": "never",
+		"block-opening-brace-newline-after": "always",
+		"block-opening-brace-space-before": "always",
+		"rule-empty-line-before": "always",
+		"at-rule-empty-line-before": "always",
+		"selector-list-comma-newline-after": null,
+		"font-family-no-missing-generic-family-keyword": null,
+		"number-leading-zero": "always",
+		"custom-property-empty-line-before":"never",
+		"number-max-precision": [
+			4,
+			{
+				"severity": "warning"
+			}
+		],
+		"number-no-trailing-zeros": [
+			true,
+			{
+				"severity": "warning"
+			}
+		],
+		"function-url-quotes": "always",
+		"function-max-empty-lines": 1,
+		"value-list-max-empty-lines": 1,
+		"value-list-comma-space-after": [
+			"always",
+			{
+				"severity": "warning"
+			}
+		],
+		"string-quotes": "single",
+		"unit-case": "lower",
+		"unit-no-unknown": true,
+		"selector-type-no-unknown": true,
+		"selector-pseudo-class-no-unknown": true,
+		"selector-pseudo-element-no-unknown": true,
+		"media-feature-name-no-unknown": true,
+		"no-duplicate-selectors": true,
+		"selector-max-empty-lines": 1,
+		"selector-class-pattern": null,
+		"property-no-unknown": true,
+		"property-case": "lower",
+		"comment-no-empty": true,
+		"no-extra-semicolons": true,
+		"no-invalid-double-slash-comments": true,
+		"keyframe-declaration-no-important": true,
+		"declaration-colon-space-after": "always",
+		"order/order": ["declarations", "custom-properties", "dollar-variables", "rules", "at-rules"],
+		"order/properties-order": [
+			{
+				"groundName": "Display & Flow",
+				"emptyLineBefore": "never",
+				"properties": ["display", "visibility", "float", "clear"]
+			},
+			{
+				"groundName": "Positioning",
+				"emptyLineBefore": "never",
+				"properties": ["position", "top", "right", "bottom", "left", "z-index", "transform", "rotate"]
+			},
+			{
+				"groundName": "Flex",
+				"emptyLineBefore": "never",
+				"properties": [
+					"flex",
+					"flex-direction",
+					"flex-grow",
+					"flex-shrink",
+					"flex-basis",
+					"flex-wrap",
+					"justify-content",
+					"align-items"
+				]
+			},
+			{
+				"groundName": "Dimensions",
+				"emptyLineBefore": "never",
+				"properties": [
+					"width",
+					"min-width",
+					"max-width",
+					"height",
+					"min-height",
+					"max-height",
+					"overflow"
+				]
+			},
+			{
+				"groundName": "Margins, Padding, Borders, Outline",
+				"emptyLineBefore": "never",
+				"properties": [
+					"margin",
+					"margin-top",
+					"margin-right",
+					"margin-bottom",
+					"margin-left",
+					"padding",
+					"padding-top",
+					"padding-right",
+					"padding-bottom",
+					"padding-left",
+					"border-radius",
+					"border",
+					"border-top",
+					"border-right",
+					"border-bottom",
+					"border-left",
+					"border-width",
+					"border-top-width",
+					"border-right-width",
+					"border-bottom-width",
+					"border-left-width",
+					"border-style",
+					"border-top-style",
+					"border-right-style",
+					"border-bottom-style",
+					"border-left-style",
+					"border-color",
+					"border-top-color",
+					"border-right-color",
+					"border-bottom-color",
+					"border-left-color",
+					"outline",
+					"list-style",
+					"table-layout",
+					"border-collapse",
+					"border-spacing",
+					"empty-cells"
+				]
+			},
+			{
+				"groundName": "Typographic Styles",
+				"emptyLineBefore": "never",
+				"properties": [
+					"font",
+					"font-family",
+					"font-size",
+					"line-height",
+					"font-weight",
+					"text-align",
+					"text-indent",
+					"text-transform",
+					"text-decoration",
+					"letter-spacing",
+					"word-spacing",
+					"white-space",
+					"vertical-align",
+					"color"
+				]
+			},
+			{
+				"groundName": "DimenBackgroundssions",
+				"emptyLineBefore": "never",
+				"properties": [
+					"background",
+					"background-color",
+					"background-image",
+					"background-repeat",
+					"background-position"
+				]
+			},
+			{
+				"groundName": "Opacity, Cursors, Generated Content, Transition",
+				"emptyLineBefore": "never",
+				"properties": ["opacity", "cursor", "content", "quotes", "transition"]
+			}
+		]
+	}
+}

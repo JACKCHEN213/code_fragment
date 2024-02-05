@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Code Highlighting in Textarea</title>
+    <link rel="stylesheet" href="./highlight/styles/dark.min.css">
+    <script src="./highlight/highlight.min.js"></script>
+    <style>
+        #code-container {
+            border: 1px solid #ccc;
+            padding: 10px;
+            min-height: 100px;
+            overflow: auto;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="code-container" contenteditable="true" class="hljs language-ini"></div>
+<button id="show">show</button>
+    <script>
+
+        function saveSelection(containerEl) {
+            var range = window.getSelection().getRangeAt(0);
+            var preSelectionRange = range.cloneRange();
+            preSelectionRange.selectNodeContents(containerEl);
+            preSelectionRange.setEnd(range.startContainer, range.startOffset);
+            var start = preSelectionRange.toString().length;
+
+            return {
+                start: start,
+                end: start + range.toString().length
+            };
+        }
+
+        function restoreSelection(containerEl, savedSel) {
+            var charIndex = 0, range = document.createRange();
+            range.setStart(containerEl, 0);
+            range.collapse(true);
+            var nodeStack = [containerEl], node, foundStart = false, stop = false;
+
+            while (!stop && (node = nodeStack.pop())) {
+                if (node.nodeType == 3) {
+                    var nextCharIndex = charIndex + node.length;
+                    if (!foundStart && savedSel.start >= charIndex && savedSel.start <= nextCharIndex) {
+                        range.setStart(node, savedSel.start - charIndex);
+                        foundStart = true;
+                    }
+                    if (foundStart && savedSel.end >= charIndex && savedSel.end <= nextCharIndex) {
+                        range.setEnd(node, savedSel.end - charIndex);
+                        stop = true;
+                    }
+                    charIndex = nextCharIndex;
+                } else {
+                    var i = node.childNodes.length;
+                    while (i--) {
+                        nodeStack.push(node.childNodes[i]);
+                    }
+                }
+            }
+
+            var sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+        }
+
+        const codeContainer = document.getElementById('code-container');
+        const showBtn = document.getElementById('show');
+        const defaultContent = `a=1
+b=2231
+c='232131'
+od='321' # 3131231231313131
+zz=true`;
+        codeContainer.innerHTML = defaultContent;
+        console.log(defaultContent);
+        hljs.highlightElement(codeContainer, {language: 'ini'});
+
+        codeContainer.addEventListener('keydown', function (event) {
+            var savedSel = saveSelection(codeContainer);
+            codeContainer.innerHTML = codeContainer.innerHTML.replace(/<div><br><\/div>|<div>/gi, '\n').replace(/<br>/gi, '\n');
+            codeContainer.querySelectorAll('span').forEach((span) => {
+                span.replaceWith(span.textContent);
+            });
+            codeContainer.removeAttribute('data-highlighted');
+            hljs.highlightElement(codeContainer, { language: 'ini' });
+            if (event.key === 'Enter') {
+                // savedSel.end++;
+            }
+            restoreSelection(codeContainer, savedSel);
+            console.log(saveSelection(codeContainer), savedSel);
+        });
+        showBtn.addEventListener('click', () => {
+            console.log(codeContainer.textContent);
+        });
+    </script>
+
+</body>
+
+</html>
