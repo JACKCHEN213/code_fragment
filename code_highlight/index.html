@@ -7,16 +7,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>代码高亮试验</title>
     <link rel="stylesheet" href="./highlight/styles/dark.min.css" type="text/css" />
-    <link rel="stylesheet" href="./css/index.css" type="text/css" />
     <script src="./highlight/highlight.min.js"></script>
     <script src="./jquery.min.js"></script>
+    <script src="plugins/code-highlight.js"></script>
 </head>
 
 <body>
-    <div id="wrapper">
-        <textarea id="input"></textarea>
-        <div id="showback" class="language-ini"></div>
-    </div>
+    <div id="test" style="width: 800px; height: 600px;"></div>
+    <button id="btn">获取数据</button>
 </body>
 <script>
     const defaultContent = `a=1
@@ -24,10 +22,11 @@ b=2231
 c='232131'
 od='321' # 3131231231313131
 zz=true`;
-    $('#input').on('input change', () => {
-        $('#showback').html($('#input').val()).removeAttr('data-highlighted');
-        hljs.highlightElement($('#showback').get(0));
-    }).val(defaultContent).trigger('change');
+
+    $('#test').CodeHighlight({default: defaultContent});
+    $('#btn').on('click', () => {
+        console.log($('#test').CodeHighlight('getValue'));
+    });
 </script>
 
 </html>

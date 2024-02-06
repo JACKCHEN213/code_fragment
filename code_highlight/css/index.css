@@ -1,6 +1,6 @@
 #wrapper {
-    width: 600px;
-    height: 400px;
+    width: 620px;
+    height: 420px;
     position: relative;
 }
 
@@ -33,4 +33,10 @@
     font-family: '微软雅黑';
     padding: 10px;
     white-space: pre-wrap;
+}
+
+#test {
+    width: 600px;
+    height: 400px;
+    background-color: aqua;
 }
