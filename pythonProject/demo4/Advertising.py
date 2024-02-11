@@ -122,5 +122,5 @@ if __name__ == "__main__":
     plt.plot(t, y_test_pred, 'g-', linewidth=2, label='预测数据')
     plt.legend(loc='upper left')
     plt.title('线性回归预测销量', fontsize=18)
-    plt.grid(b=True, ls=':')
+    plt.grid(visible=True, ls=':')
     plt.show()

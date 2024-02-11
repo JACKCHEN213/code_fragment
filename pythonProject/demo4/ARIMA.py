@@ -2,12 +2,13 @@
 
 import pandas as pd
 import numpy as np
-from statsmodels.tsa.arima_model import ARIMA
+from statsmodels.tsa.arima.model import ARIMA
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import warnings
 from statsmodels.tools.sm_exceptions import HessianInversionWarning
+from datetime import datetime
 
 
 def extend(a, b):
@@ -15,7 +16,7 @@ def extend(a, b):
 
 
 def date_parser(date):
-    return pd.datetime.strptime(date, '%Y-%m')
+    return datetime.strptime(date, '%Y-%m')
 
 
 if __name__ == '__main__':
@@ -43,7 +44,7 @@ if __name__ == '__main__':
     p = 8
     q = 8
     model = ARIMA(endog=x, order=(p, d, q))  # 自回归函数p,差分d,移动平均数q
-    arima = model.fit(disp=-1)  # disp<0:不输出过程
+    arima = model.fit()  # disp<0:不输出过程
     prediction = arima.fittedvalues
     print(type(prediction))
     y = prediction.cumsum() + x[0]
@@ -67,8 +68,8 @@ if __name__ == '__main__':
         plt.plot(y, 'g-', lw=2, label='预测数据')
         title = '对数乘客人数与预测值(AR=%d, d=%d, MA=%d)：RMSE=%.4f' % (p, d, q, rmse)
     plt.legend(loc='upper left')
-    plt.grid(b=True, ls=':')
+    plt.grid(visible=True, ls=':')
     plt.title(title, fontsize=16)
-    plt.tight_layout(2)
+    plt.tight_layout()
     # plt.savefig('%s.png' % title)
     plt.show()
