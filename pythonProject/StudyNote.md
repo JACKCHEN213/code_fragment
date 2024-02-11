@@ -82,7 +82,7 @@ if __name__ == '__main__':
     main()
 
 ```
-![img/demo1.png](demo1/img/test1.png)
+![img/demo1.png](python基础/img/test1.png)
 
 ### 均匀分区迭代后是高斯分布（正态分布）
 
@@ -123,11 +123,11 @@ if __name__ == '__main__':
 
 1. 均匀分布
 
-![](demo1/img/test2_1.png)
+![](python基础/img/test2_1.png)
 
 2. 高斯分布
 
-![](demo1/img/test2_2.png)
+![](python基础/img/test2_2.png)
 
 ### np与pd的转换
 
@@ -172,7 +172,7 @@ if __name__ == '__main__':
 
 ```
 
-![](demo1/img/test4.png)
+![](python基础/img/test4.png)
 
 
 ### 随机森林预测正确的概率
@@ -227,7 +227,7 @@ if __name__ == '__main__':
 
 ```
 
-![](demo1/img/test5.png)
+![](python基础/img/test5.png)
 
 ## 概率初识
 
@@ -311,7 +311,7 @@ if __name__ == '__main__':
 
 ```
 
-![](demo2/img/test1.png)
+![](简单样例/img/test1.png)
 
 ### Nagel-Schreckenberg交通流模型
 
@@ -390,4 +390,4 @@ if __name__ == '__main__':
 
 ```
 
-![](demo2/img/test2.png)
+![](简单样例/img/test2.png)
